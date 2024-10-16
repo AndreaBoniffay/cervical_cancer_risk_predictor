@@ -1,0 +1,63 @@
+# Multivariate Analysis
+
+To improve the results of the multivariate analysis, data has been normalised.  
+
+>`scale()` is used from the heatmaply library. description: `scale()` use Z-score.  
+This method is robust to extreme values and retains information on the variance. 
+
+
+## Vizualisation
+
+```{r headmap on data, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 15}
+#headmap<- heatmaply(
+#  data, 
+#  xlab = "Features",
+#  ylab = "Patients", 
+#  main = "data headmap"
+#)
+```
+
+
+```{r normalisation, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 4} 
+normalised_data <- scale(data %>% select(-ID))
+```
+
+**Figure 5 : heatmap on standardised data**
+
+```{r headmap on normalised data, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 15}
+#headmap_normalized<- heatmaply(
+#  normalised_data, 
+#  xlab = "Features",
+#  ylab = "Patients", 
+#  main = "Normalised data headmap"
+#)
+#headmap_normalized
+```
+
+
+**Figure 6 : Correlation matrix on standardised data**
+
+```{r correlation matrix on normalised data, echo = FALSE, message=FALSE, warning=FALSE, fig.width = 13, fig.height = 13}
+
+get_correlation_matrix(normalised_data)
+
+```
+
+
+
+## Linear Regression
+
+
+
+
+
+## Logistic Regression
+
+
+
+
+
+## Interpretation 
+
+### OR 
+### RR 

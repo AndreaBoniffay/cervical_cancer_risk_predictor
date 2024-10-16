@@ -1,0 +1,121 @@
+# Multivariate Analysis 
+
+To improve the results of the multivariate analysis, i normalise the data. 
+scale() is used from the heatmaply library. description: scale() normalise par rapport à la moyenne et à l'écart-type, ce qui donne un Z-score.  
+I chose this method because: there are a few extreme values in my unsuppressed dataset (professional expertise) and this method is robust to 
+outliers and retains information on the variance. 
+
+## Vizualisation
+
+```{r headmap on data, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 15}
+#headmap<- heatmaply(
+#  data, 
+#  xlab = "Features",
+#  ylab = "Patients", 
+#  main = "data headmap"
+#)
+```
+
+
+```{r normalisation, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 4} 
+normalised_data <- scale(data %>% select(-ID))
+```
+
+**Figure 5 : heatmap on standardised data**
+
+```{r headmap on normalised data, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 15}
+#headmap_normalized<- heatmaply(
+#  normalised_data, 
+#  xlab = "Features",
+#  ylab = "Patients", 
+#  main = "Normalised data headmap"
+#)
+#headmap_normalized
+```
+
+
+**Figure 6 : Correlation matrix on standardised data**
+
+```{r correlation matrix on normalised data, echo = FALSE, message=FALSE, warning=FALSE, fig.width = 13, fig.height = 13}
+
+get_correlation_matrix(normalised_data)
+
+```
+
+## ACP
+
+```{r ACP , echo = FALSE, message=FALSE, warning=FALSE, fig.height = 4}
+
+selected_columns <- c(which(colnames(normalised_data) %in% quantitative_variable_names), which(colnames(normalised_data) == "DxCancer"))
+
+# Effectuer la PCA avec la variable "DxCancer" incluse comme qualitative supplémentaire
+res_PCA <- PCA(normalised_data[, selected_columns], quali.sup = which(colnames(normalised_data[, selected_columns]) == "DxCancer"))
+
+#explor::explor(res_PCA)
+res_prepared <- explor::prepare_results(res_PCA)
+
+
+res_var12 <- explor::PCA_var_plot(res_prepared, xax = 1, yax = 2, var_sup = FALSE, 
+                                  var_sup_choice = c(), var_lab_min_contrib = 0, 
+                                  col_var = NULL, labels_size = 10, scale_unit = TRUE, 
+                                  transitions = TRUE, labels_positions = NULL)
+
+res_var13 <- explor::PCA_var_plot(res_prepared, xax = 1, yax = 3, var_sup = FALSE, 
+                                  var_sup_choice = c(), var_lab_min_contrib = 0, 
+                                  col_var = NULL, labels_size = 10, scale_unit = TRUE, 
+                                  transitions = TRUE, labels_positions = NULL, 
+                                  xlim = c(-1.1, 1.1), ylim = c(-1.1, 1.1))
+
+res_var23 <- explor::PCA_var_plot(res_prepared, xax = 2, yax = 3, var_sup = FALSE, 
+                                  var_sup_choice = c(), var_lab_min_contrib = 0, 
+                                  col_var = NULL, labels_size = 10, scale_unit = TRUE, 
+                                  transitions = TRUE, labels_positions = NULL, 
+                                  xlim = c(-1.1, 1.1), ylim = c(-1.1, 1.1))
+
+
+res_ind <- explor::PCA_ind_plot(res_prepared, xax = 1, yax = 2, ind_sup = FALSE, 
+                                lab_var = NULL, ind_lab_min_contrib = 0, col_var = "DxCancer", 
+                                labels_size = 9, point_opacity = 0.5, opacity_var = NULL, 
+                                point_size = 64, ellipses = FALSE, transitions = TRUE, 
+                                labels_positions = NULL)
+
+
+res_var12
+res_var13
+res_var23
+res_ind
+```
+
+## ACM
+
+```{r ACM, echo = FALSE, message=FALSE, warning=FALSE, fig.height = 4}
+selected_columns <- c(which(colnames(data) %in% qualitative_variable_names))
+
+res_MCA <- MCA(data[, selected_columns])
+
+#explor::explor(res_MCA)
+res_prepared <- explor::prepare_results(res_MCA)
+
+res_var12 <- explor::MCA_var_plot(res_prepared, xax = 1, yax = 2, var_sup = FALSE, var_sup_choice = ,
+    var_lab_min_contrib = 0, col_var = "Variable", symbol_var = NULL, size_var = NULL,
+    size_range = c(10, 300), labels_size = 10, point_size = 56, transitions = TRUE,
+    labels_positions = NULL, labels_prepend_var = FALSE, xlim = c(-2.54, 4.09),
+    ylim = c(-1.13, 5.5))
+
+res_var13 <- explor::MCA_var_plot(res_prepared, xax = 1, yax = 3, var_sup = FALSE, var_sup_choice = ,
+    var_lab_min_contrib = 0, col_var = "Variable", symbol_var = NULL, size_var = NULL,
+    size_range = c(10, 300), labels_size = 10, point_size = 56, transitions = TRUE,
+    labels_positions = NULL, labels_prepend_var = FALSE, xlim = c(-5.01, 7.18),
+    ylim = c(-5.7, 6.49))
+
+res_ind <- explor::MCA_ind_plot(res_prepared, xax = 1, yax = 2, ind_sup = FALSE, lab_var = NULL,
+    ind_lab_min_contrib = 0, col_var = "DxCancer", labels_size = 9, point_opacity = 0.5,
+    opacity_var = NULL, point_size = 64, ellipses = FALSE, transitions = TRUE,
+    labels_positions = NULL)
+
+res_var12
+res_var13
+res_ind
+
+```
+
